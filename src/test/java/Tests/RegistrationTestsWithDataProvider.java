@@ -8,32 +8,40 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-public class RegistrationTestsWithJavaFaker extends TestBase{
+public class RegistrationTestsWithDataProvider extends TestBase{
     private HomePage homePage;
-    private RegistrationPage registrationPage;
-    private LoginPage loginPage;
+    RegistrationPage registrationPage;
+    LoginPage loginPage;
 
-    Faker fakeData = new Faker();
-    String firstName=fakeData.name().firstName();
-    String lastName = fakeData.name().lastName();
-    String email = fakeData.internet().emailAddress();
-    String password =  fakeData.number().digits(8).toString();
-
-    @Test(priority = 1)
-    public void ValidRegistration()
+    @DataProvider(name = "TestData")
+    public static Object[][] userData()
+    {
+        return new Object[][]{
+                {"Abdallah","Mohamed","test4@gmail.com","123456"}
+        };
+    }
+    @DataProvider(name = "LoginData")
+    public static Object[][] loginData()
+    {
+        return new Object[][]{
+                {"test4@gmail.com","123456"}
+        };
+    }
+    @Test(priority = 1,dataProvider = "TestData")
+    public void ValidRegistration(String fname,String Lname,String email,String pass)
     {
         homePage = new HomePage(driver);
         homePage.OpenRegistrationPage();
         registrationPage = new RegistrationPage(driver);
-        registrationPage.RegistrationForm(firstName,lastName,email,password);
+        registrationPage.RegistrationForm(fname, Lname, email, pass);
         Assert.assertTrue(registrationPage.SuccessfulRegister.getText().contains("Your registration completed"));
     }
-    @Test(priority = 2,dependsOnMethods ="ValidRegistration")
-    public void RegisteredUserCanLogin()
+    @Test(priority = 2,dependsOnMethods ="ValidRegistration",dataProvider = "LoginData")
+    public void RegisteredUserCanLogin(String email,String pass)
     {
         homePage.OpenLoginPage();
         loginPage =new LoginPage(driver);
-        loginPage.LoginForm(email,password);
+        loginPage.LoginForm(email,pass);
         Assert.assertTrue(homePage.logoutLink.isDisplayed());
     }
     @Test(priority = 3,dependsOnMethods = "RegisteredUserCanLogin")
