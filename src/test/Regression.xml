@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name="NopCommerce" >
+    <parameter name="browser" value="chrome-headless">
+    </parameter>
+    <test name="Regression Test" preserve-order="true">
+        <classes>
+            <class name="Tests.RegistrationTests"/>
+        </classes>
+    </test>
+</suite>
